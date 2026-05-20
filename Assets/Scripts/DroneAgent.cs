@@ -37,7 +37,8 @@ public class DroneAgent : Agent
 
     private float[] previousActions = new float[4]; // Throttle, Pitch, Roll, Yaw
     Rigidbody rBody;
-    void Start () {
+    public override void Initialize()
+    {
         rBody = GetComponent<Rigidbody>();
     }
     
@@ -155,14 +156,15 @@ public class DroneAgent : Agent
     {
         if (raySensor == null) return;
         var rayOutput = raySensor.GetRayPerceptionInput();
-        var rayResults = RayPerceptionSensor.Perceive(rayOutput);
-        foreach (var ray in rayResults.Outputs){
+        var rayResults = RayPerceptionSensor.Perceive(rayOutput, false);
+        foreach (var ray in rayResults.RayOutputs){
             if (ray.HasHit && ray.HitGameObject != null){
                 if (ray.HitGameObject.CompareTag("Obstacle") || ray.HitGameObject.CompareTag("Boundary"))
                 {
                     float proximityEffect = 1.0f - ray.HitFraction;
                     AddReward(ProximityPenalty * proximityEffect);
-                    Debug.Log("Obstacle detected by ray sensor at distance: " + ray.Distance);
+                    float hitDistance = ray.HitFraction * rayOutput.RayLength;
+                    Debug.Log("Obstacle detected by ray sensor at distance: " + hitDistance);
                 }
             }
         }
