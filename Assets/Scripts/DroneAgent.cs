@@ -14,7 +14,6 @@ public class DroneAgent : Agent
     public float ObstaclePenalty = -0.5f; // Penalty for hitting an obstacle
     public float rewardThreshold = 2f; // Threshold for the reward
     // LayerMask to filter raycast hits (optional, if you want to limit detection to specific layers).
-    public LayerMask plasticLayer;
     public int maxSteps = 5000;
     public float forceMultiplier = 10f;
     public float torqueMultiplier = 2f;
@@ -45,7 +44,7 @@ public class DroneAgent : Agent
     public override void OnEpisodeBegin()
     {
         // Reset the agent's position and velocity
-        transform.localPosition = new Vector3(0, 17, -40);
+        transform.localPosition = new Vector3(0, 8, 0);
         rBody.angularVelocity = Vector3.zero;
         rBody.linearVelocity = Vector3.zero;
         lastLinearVelocity = Vector3.zero;

@@ -8,11 +8,12 @@ TagManager:
   - Plastic
   - Boundary
   - RiverEnd
+  - Obstacle
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - Plastic
   - Water
   - UI
   - 
