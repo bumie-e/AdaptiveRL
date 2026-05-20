@@ -1,26 +1,29 @@
 
 using UnityEngine;
 using UnityEngine.Networking; 
+using Unity.MLAgents;
+using Unity.MLAgents.Sensors;
+using Unity.MLAgents.Actuators;
 using System.Collections; 
 using System.IO; 
 
 public class DroneAgentDataCollection : Agent
 {
     public Transform Target;
+    public float forceMultiplier = 20f;
+    public float torqueMultiplier = 2f;
     public int maxSteps = 5000;
-    public float forceMultiplier = 3f;
     public Camera droneCamera;
     public bool enableDataCollection = true;
+    
+    [Header("Data Collection")]
+    public Shader segmentationShader;
     private int stepCounter = 0;
+
     private Vector3 lastLinearVelocity;
     private Vector3 localAcceleration;
-    public float ProximityPenalty = -0.01f;
-    public float PlasticDetectionReward = 1f;
-    public float RewardNormalisationFactor = 0.3f;
-
-    public Shader segmentationShader;
-
     Rigidbody rBody;
+
     void Start () {
         rBody = GetComponent<Rigidbody>();
     }
@@ -28,6 +31,7 @@ public class DroneAgentDataCollection : Agent
     public override void OnEpisodeBegin()
     {
         transform.localPosition = new Vector3(0, 17, -40);
+        transform.rotation = Quaternion.Euler(0, 0, 0);
         rBody.angularVelocity = Vector3.zero;
         rBody.linearVelocity = Vector3.zero;
         lastLinearVelocity = Vector3.zero;
@@ -35,10 +39,7 @@ public class DroneAgentDataCollection : Agent
         GameObject[] wastes = GameObject.FindGameObjectsWithTag("Plastic");
         foreach (GameObject waste in wastes)
         {
-            if (!waste.activeSelf)
-            {
-                waste.SetActive(true);
-            }
+            if (!waste.activeSelf) waste.SetActive(true);
         }
     }
 
@@ -47,30 +48,32 @@ public class DroneAgentDataCollection : Agent
         sensor.AddObservation(this.transform.localPosition);
         sensor.AddObservation(rBody.linearVelocity);
         sensor.AddObservation(this.transform.localRotation); 
+        
         Vector3 localAngularVel = transform.InverseTransformDirection(rBody.angularVelocity);
         sensor.AddObservation(localAngularVel);
+
         Vector3 currentLinearVelocity = rBody.linearVelocity;
         localAcceleration = (currentLinearVelocity - lastLinearVelocity) / Time.fixedDeltaTime;
         lastLinearVelocity = currentLinearVelocity;
         sensor.AddObservation(transform.InverseTransformDirection(localAcceleration));
     }
 
-    private void OnCollisionEnter(Collision collision)
-    {
-
-    }
-
     public override void OnActionReceived(ActionBuffers actionBuffers)
     {
-        Vector3 controlSignal = Vector3.zero;
-        controlSignal.x = actionBuffers.ContinuousActions[0];
-        controlSignal.z = actionBuffers.ContinuousActions[1];
-        rBody.AddForce(controlSignal * forceMultiplier);
+        // 4 Actions: [0] Throttle, [1] Pitch, [2] Roll, [3] Yaw
+        float throttle = actionBuffers.ContinuousActions[0];
+        float pitch = actionBuffers.ContinuousActions[1];
+        float roll = actionBuffers.ContinuousActions[2];
+        float yaw = actionBuffers.ContinuousActions[3];
 
-        if (StepCount >= maxSteps)
-        {
-            EndEpisode();
-        }
+        rBody.AddForce(transform.up * throttle * forceMultiplier);
+        rBody.AddForce(transform.forward * pitch * forceMultiplier);
+        rBody.AddForce(transform.right * roll * forceMultiplier);
+        rBody.AddTorque(transform.up * yaw * torqueMultiplier);
+
+        AddReward(-0.0001f);
+
+        if (StepCount >= maxSteps) EndEpisode();
         
         stepCounter++;
         if (enableDataCollection && stepCounter % 5 == 0)
@@ -81,11 +84,7 @@ public class DroneAgentDataCollection : Agent
 
     private void TakePicture()
     {
-        if (droneCamera == null)
-        {
-            Debug.LogWarning("Drone camera is not assigned!");
-            return;
-        }
+        if (droneCamera == null) return;
 
         string timestamp = $"{Time.frameCount}_{System.DateTime.Now:HHmmss}";
         string dataPath = Path.Combine(Application.dataPath, "Data");
@@ -105,13 +104,9 @@ public class DroneAgentDataCollection : Agent
         cam.targetTexture = rt;
 
         if (replacementShader != null)
-        {
             cam.RenderWithShader(replacementShader, "RenderType");
-        }
         else
-        {
             cam.Render();
-        }
 
         RenderTexture.active = rt;
         Texture2D screenShot = new Texture2D(1024, 1024, TextureFormat.RGB24, false);
@@ -129,8 +124,19 @@ public class DroneAgentDataCollection : Agent
 
     public override void Heuristic(in ActionBuffers actionsOut)
     {
-        var continuousActionsOut = actionsOut.ContinuousActions;
-        continuousActionsOut[0] = Input.GetAxis("Horizontal");
-        continuousActionsOut[1] = Input.GetAxis("Vertical");
+        var continuousActions = actionsOut.ContinuousActions;
+        
+        float throttle = 0;
+        if (Input.GetKey(KeyCode.Space)) throttle = 1;
+        if (Input.GetKey(KeyCode.LeftShift)) throttle = -1;
+        continuousActions[0] = throttle;
+
+        continuousActions[1] = Input.GetAxis("Vertical");
+        continuousActions[2] = Input.GetAxis("Horizontal");
+
+        float yaw = 0;
+        if (Input.GetKey(KeyCode.Q)) yaw = -1;
+        if (Input.GetKey(KeyCode.E)) yaw = 1;
+        continuousActions[3] = yaw;
     }
 }
