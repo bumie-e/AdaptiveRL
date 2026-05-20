@@ -1,11 +1,9 @@
 
 using UnityEngine;
-using UnityEngine.Networking; 
 using Unity.MLAgents;
 using Unity.MLAgents.Sensors;
 using Unity.MLAgents.Actuators;
-using System.Collections; 
-using System.IO; 
+using System.IO;
 
 public class DroneAgentDataCollection : Agent
 {
@@ -81,6 +79,9 @@ public class DroneAgentDataCollection : Agent
             TakePicture();
         }
     }
+
+
+
 
     private void TakePicture()
     {
