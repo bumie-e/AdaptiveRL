@@ -12,7 +12,7 @@ public class CaptureCameraController : MonoBehaviour
     public Vector3 offset = new Vector3(0, -1, 0);
 
     // Flag to enable/disable picture-taking functionality
-    public bool enableDataCollection = true;
+    // public bool enableDataCollection = true;
 
     // Counter to track frames for picture-taking intervals
     private int frameCounter = 0;
@@ -34,11 +34,11 @@ public class CaptureCameraController : MonoBehaviour
         // Increment the frame counter
         frameCounter++;
 
-        // Take a picture every 5 frames if data collection is enabled
-        if (enableDataCollection && frameCounter % 5 == 0)
-        {
-            TakePicture();
-        }
+        // // Take a picture every 5 frames if data collection is enabled
+        // if (enableDataCollection && frameCounter % 5 == 0)
+        // {
+        //     TakePicture();
+        // }
     }
 
     // Method to take a picture of the environment

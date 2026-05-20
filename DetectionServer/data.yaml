@@ -1,0 +1,7 @@
+path: ./yolo_dataset  # dataset root dir (absolute or relative)
+train: images  # train images (relative to 'path')
+val: images    # val images (relative to 'path')
+
+# Classes
+names:
+  0: plastic_waste
