@@ -15,6 +15,7 @@ public class CameraController : MonoBehaviour
     public bool enableDataCollection = true;
     public int captureIntervalFrames = 5;
     public Shader segmentationShader;
+    public LayerMask plasticLayer; 
     
     private int frameCounter = 0;
     private Camera cam;
@@ -69,10 +70,21 @@ public class CameraController : MonoBehaviour
         RenderTexture rt = new RenderTexture(1024, 1024, 24);
         cam.targetTexture = rt;
 
+        int originalMask = cam.cullingMask;
+        Color originalBG = cam.backgroundColor;
+        CameraClearFlags originalFlags = cam.clearFlags;
+
         if (replacementShader != null)
-            cam.RenderWithShader(replacementShader, "RenderType");
+        {
+            cam.cullingMask = plasticLayer; 
+            cam.backgroundColor = Color.black;
+            cam.clearFlags = CameraClearFlags.SolidColor;
+            cam.RenderWithShader(replacementShader, ""); 
+        }
         else
-            cam.Render();
+        {
+            cam.Render(); 
+        }
 
         RenderTexture.active = rt;
         Texture2D screenShot = new Texture2D(1024, 1024, TextureFormat.RGB24, false);
@@ -83,7 +95,11 @@ public class CameraController : MonoBehaviour
         File.WriteAllBytes(fullPath, bytes);
 
         cam.targetTexture = null;
+        cam.cullingMask = originalMask;
+        cam.backgroundColor = originalBG;
+        cam.clearFlags = originalFlags;
         RenderTexture.active = null;
+        
         Destroy(rt);
         Destroy(screenShot);
     }
