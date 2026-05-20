@@ -2,83 +2,89 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-using System.IO; // For file saving
+using System.IO;
+
 public class CameraController : MonoBehaviour
 {
-    // Reference to the player GameObject.
-    public GameObject player;
+    [Header("Follow Settings")]
+    public GameObject drone;
+    public Vector3 offset = new Vector3(0, 0.5f, 1f); 
+    public bool followRotation = true;
 
-    // The distance between the camera and the player.
-    private Vector3 offset;
-    public bool enableDataCollection = false;
-
-    // Counter to track frames for picture-taking intervals
+    [Header("Data Collection")]
+    public bool enableDataCollection = true;
+    public int captureIntervalFrames = 5;
+    public Shader segmentationShader;
+    
     private int frameCounter = 0;
+    private Camera cam;
 
-    // Start is called before the first frame update.
     void Start()
     {
-        // Calculate the initial offset between the camera's position and the player's position.
-        offset = transform.position - player.transform.position;
+        cam = GetComponent<Camera>();
+        if (cam == null) Debug.LogError("CameraController: No Camera component found!");
     }
 
-    // LateUpdate is called once per frame after all Update functions have been completed.
     void LateUpdate()
     {
-        // Maintain the same offset between the camera and player throughout the game.
-        transform.position = player.transform.position + offset;
-        // Optional: Make the camera look at the drone
-        // transform.LookAt(drone.transform);
-        // Increment the frame counter
+        if (drone == null) return;
+
+        if (followRotation)
+        {
+            transform.position = drone.transform.position + drone.transform.TransformDirection(offset);
+            transform.rotation = drone.transform.rotation;
+        }
+        else
+        {
+            transform.position = drone.transform.position + offset;
+        }
+
         frameCounter++;
-
-        // // Take a picture every 5 frames if data collection is enabled
-        // if (enableDataCollection && frameCounter % 8 == 0)
-        // {
-        //     TakePicture();
-        // }
-        
+        if (enableDataCollection && frameCounter % captureIntervalFrames == 0)
+        {
+            CaptureData();
+        }
     }
 
-    private void TakePicture()
+    private void CaptureData()
     {
-        Camera camera = GetComponent<Camera>();
-        if (camera == null)
+        string timestamp = $"{Time.frameCount}_{System.DateTime.Now:HHmmss}";
+        string dataPath = Path.Combine(Application.dataPath, "Data");
+        string imagesPath = Path.Combine(dataPath, "images");
+        string masksPath = Path.Combine(dataPath, "masks");
+
+        if (!Directory.Exists(imagesPath)) Directory.CreateDirectory(imagesPath);
+        if (!Directory.Exists(masksPath)) Directory.CreateDirectory(masksPath);
+
+        CaptureView(Path.Combine(imagesPath, $"img_{timestamp}.png"), null);
+
+        if (segmentationShader != null)
         {
-            Debug.LogWarning("No Camera component found on this GameObject!");
-            return;
+            CaptureView(Path.Combine(masksPath, $"mask_{timestamp}.png"), segmentationShader);
         }
-
-        // Create a RenderTexture and set it as the camera's target
-        RenderTexture renderTexture = new RenderTexture(1920, 1080, 24);
-        camera.targetTexture = renderTexture;
-
-        // Render the camera's view
-        Texture2D screenshot = new Texture2D(1920, 1080, TextureFormat.RGB24, false);
-        camera.Render();
-
-        // Read the pixels from the RenderTexture
-        RenderTexture.active = renderTexture;
-        screenshot.ReadPixels(new Rect(0, 0, 1920, 1080), 0, 0);
-        screenshot.Apply();
-
-        // Reset the camera's target texture and RenderTexture
-        camera.targetTexture = null;
-        RenderTexture.active = null;
-        Destroy(renderTexture);
-
-        // Save the image to a file
-        byte[] bytes = screenshot.EncodeToPNG();
-        string filePath = Path.Combine(Application.dataPath, "Screenshots");
-        if (!Directory.Exists(filePath))
-        {
-            Directory.CreateDirectory(filePath);
-        }
-        string fileName = $"screenshot_{Time.frameCount}.png";
-        File.WriteAllBytes(Path.Combine(filePath, fileName), bytes);
-
-        Debug.Log($"Screenshot saved to {Path.Combine(filePath, fileName)}");
     }
 
-    
+    private void CaptureView(string fullPath, Shader replacementShader)
+    {
+        RenderTexture rt = new RenderTexture(1024, 1024, 24);
+        cam.targetTexture = rt;
+
+        if (replacementShader != null)
+            cam.RenderWithShader(replacementShader, "RenderType");
+        else
+            cam.Render();
+
+        RenderTexture.active = rt;
+        Texture2D screenShot = new Texture2D(1024, 1024, TextureFormat.RGB24, false);
+        screenShot.ReadPixels(new Rect(0, 0, 1024, 1024), 0, 0);
+        screenShot.Apply();
+
+        byte[] bytes = screenShot.EncodeToPNG();
+        File.WriteAllBytes(fullPath, bytes);
+
+        cam.targetTexture = null;
+        RenderTexture.active = null;
+        Destroy(rt);
+        Destroy(screenShot);
+    }
 }
