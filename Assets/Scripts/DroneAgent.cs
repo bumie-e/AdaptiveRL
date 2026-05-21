@@ -39,6 +39,10 @@ public class DroneAgent : Agent
     public override void Initialize()
     {
         rBody = GetComponent<Rigidbody>();
+        if (droneCamera == null)
+        {
+            enableDataCollection = false;
+        }
     }
     
     public override void OnEpisodeBegin()
@@ -145,7 +149,7 @@ public class DroneAgent : Agent
         EnforceFlightStability();
         
         stepCounter++;
-        if (enableDataCollection && stepCounter % 5 == 0)
+        if (enableDataCollection && droneCamera != null && stepCounter % 5 == 0)
         {
             StartCoroutine(CaptureAndSendImage());
         }

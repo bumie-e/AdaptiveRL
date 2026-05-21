@@ -1,5 +1,5 @@
 env_settings:
-  num_envs: 8
+  num_envs: 1
 
 engine_settings:
   width: 84
