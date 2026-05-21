@@ -23,6 +23,10 @@
 *.png
 Assets/Data/*
 *.zip
+DetectionServer/yolo_dataset/labels/*
+DetectionServer/yolo_dataset/labels.cache
+DetectionServer/*.pt
+DetectionServer/runs/*
 
 # By default unity supports Blender asset imports, *.blend1 blender files do not need to be committed to version control.
 *.blend1

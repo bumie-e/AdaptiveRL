@@ -2,5 +2,10 @@ fastapi
 uvicorn
 ultralytics
 opencv-python
-numpy
+numpy==1.23.5
 python-multipart
+pyngrok
+mlagents
+gym-unity
+stable-baselines3 
+shimmy

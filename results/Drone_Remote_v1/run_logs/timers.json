@@ -1,0 +1,42 @@
+{
+    "name": "root",
+    "metadata": {
+        "timer_format_version": "0.1.0",
+        "start_time_seconds": "1779372743",
+        "python_version": "3.10.12 (main, Jul  5 2023, 18:54:27) [GCC 11.2.0]",
+        "command_line_arguments": "/home/bunmi/miniconda3/envs/mlagents/bin/mlagents-learn drone_training_config.yaml --env=/tmp/ml-agents-binaries/binaries/drone-v1-06a8b09255d219a03581c58868712d71/DroneEnv/DroneEnv.x86_64 --run-id=Drone_Remote_v1 --force --timeout-wait=300",
+        "mlagents_version": "1.1.0",
+        "mlagents_envs_version": "1.1.0",
+        "communication_protocol_version": "1.5.0",
+        "pytorch_version": "2.12.0+cu126",
+        "numpy_version": "1.23.5",
+        "end_time_seconds": "1779373058"
+    },
+    "total": 314.6106430340151,
+    "count": 1,
+    "self": 10.083030240028165,
+    "children": {
+        "run_training.setup": {
+            "total": 0.3265099919808563,
+            "count": 1,
+            "self": 0.3265099919808563
+        },
+        "TrainerController.start_learning": {
+            "total": 304.20110280200606,
+            "count": 1,
+            "self": 0.000125399004900828,
+            "children": {
+                "TrainerController._reset_env": {
+                    "total": 304.2009462459828,
+                    "count": 1,
+                    "self": 304.2009462459828
+                },
+                "TrainerController._save_models": {
+                    "total": 3.1157018383964896e-05,
+                    "count": 1,
+                    "self": 3.1157018383964896e-05
+                }
+            }
+        }
+    }
+}

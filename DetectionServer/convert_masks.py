@@ -62,17 +62,20 @@ def process_dataset(unity_data_path, output_path):
         if label_content:
             # Save Label
             label_name = mask_path.stem.replace("mask_", "img_") + ".txt"
-            with open(output_path / "labels" / label_name, "w") as f:
+            label_path = output_path / "labels" / label_name
+            with open(label_path, "w") as f:
                 f.write(label_content)
             
-            # Copy Image (linked by name)
-            import shutil
-            shutil.copy(img_src, output_path / "images" / img_name)
+            # Copy Image (linked by name) if source and dest are different
+            img_dest = output_path / "images" / img_name
+            if img_src.absolute() != img_dest.absolute():
+                import shutil
+                shutil.copy(img_src, img_dest)
 
     print(f"Done! YOLO dataset ready at: {output_path}")
 
 if __name__ == "__main__":
-    # Update these paths to match your local setup
-    UNITY_DATA = "../Assets/Data"
+    # Pointing to the dataset already in the DetectionServer folder
+    UNITY_DATA = "./yolo_dataset"
     OUTPUT_YOLO_DATA = "./yolo_dataset"
     process_dataset(UNITY_DATA, OUTPUT_YOLO_DATA)
