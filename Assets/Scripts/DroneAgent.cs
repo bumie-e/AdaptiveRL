@@ -20,7 +20,7 @@ public class DroneAgent : Agent
     public Camera droneCamera;
     public bool enableDataCollection = true;
     private int stepCounter = 0;
-    public string detectionServerUrl = "http://127.0.0.1:8000/predict";
+    public string detectionServerUrl = "https://promenade-relight-refund.ngrok-free.dev/predict"; // Update with your actual endpoint
     private Vector3 lastLinearVelocity;
     private Vector3 localAcceleration;
     public RayPerceptionSensorComponent3D raySensor;

@@ -15381,7 +15381,7 @@ MonoBehaviour:
   torqueMultiplier: 2
   droneCamera: {fileID: 1296336519}
   enableDataCollection: 1
-  detectionServerUrl: http://127.0.0.1:8000/predict
+  detectionServerUrl: https://promenade-relight-refund.ngrok-free.dev/predict
   raySensor: {fileID: 0}
   ProximityPenalty: -0.01
   PlasticDetectionReward: 1
@@ -15416,7 +15416,7 @@ MonoBehaviour:
     hasUpgradedBrainParametersWithActionSpec: 1
   m_Model: {fileID: 0}
   m_InferenceDevice: 0
-  m_BehaviorType: 1
+  m_BehaviorType: 0
   m_BehaviorName: DroneBehavior
   TeamId: 0
   m_UseChildSensors: 1
