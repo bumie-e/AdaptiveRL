@@ -5,4 +5,4 @@ environments:
       linux_url: "file:///home/bunmi/AdaptiveRL/DroneEnv.zip" # Or a URL
       darwin_url: "file:///home/bunmi/AdaptiveRL/DroneEnvMac.zip"
       win_url: "file:///home/bunmi/AdaptiveRL/DroneEnvWin.zip"
-      additional_args: ["-nographics", "-batchmode"]
+      additional_args: ["-batchmode"]
