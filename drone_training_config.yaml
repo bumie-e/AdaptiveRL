@@ -4,9 +4,9 @@ env_settings:
 engine_settings:
   width: 84
   height: 84
-  quality_level: 5
+  quality_level: 0
   time_scale: 20
-  target_frame_rate: -1
+  target_frame_rate: 30
   capture_frame_rate: 60
   no_graphics: false # Set to false because DroneAgent.cs uses Camera.Render()
 

@@ -51,7 +51,9 @@ def main():
         config_path = "../drone_training_config.yaml"
 
     # 4. Build env-args from registry (passed to the Unity binary, not mlagents-learn)
-    env_args = getattr(env_desc, "_additional_args", []) or []
+    env_args = (getattr(env_desc, "_additional_args", None)
+                or getattr(env_desc, "additional_args", None)
+                or [])
 
     # 5. Launch mlagents-learn
     # Increased timeout-wait to 300s to allow 8 envs to startup
