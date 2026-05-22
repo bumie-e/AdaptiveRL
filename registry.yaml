@@ -1,0 +1,8 @@
+environments:
+  - drone-v1:
+      expected_reward: 10.0
+      description: "Drone Waste Detection Environment"
+      linux_url: "file:///home/bunmi/AdaptiveRL/DroneEnv.zip" # Or a URL
+      darwin_url: "file:///home/bunmi/AdaptiveRL/DroneEnvMac.zip"
+      win_url: "file:///home/bunmi/AdaptiveRL/DroneEnvWin.zip"
+      additional_args: ["-nographics", "-batchmode"]
