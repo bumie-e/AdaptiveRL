@@ -20,14 +20,14 @@ public class DroneAgent : Agent
     public Camera droneCamera;
     public bool enableDataCollection = true;
     private int stepCounter = 0;
-    public string detectionServerUrl = "http://127.0.0.1:8000/predict";
+    public string detectionServerUrl = "https://promenade-relight-refund.ngrok-free.dev/predict";
     private Vector3 lastLinearVelocity;
     private Vector3 localAcceleration;
     public RayPerceptionSensorComponent3D raySensor;
     public float ProximityPenalty = -0.01f;
     public float PlasticDetectionReward = 1f;
     public float RewardNormalisationFactor = 0.3f; // You can tune this value for stability
-    public float MaxTiltAngle = 35f; // Maximum allowed tilt angle (Pitch/Roll)
+    public float MaxTiltAngle = 20f; // Maximum allowed tilt angle (Pitch/Roll)
     public float TiltPenalty = -0.01f; // Penalty for exceeding max tilt angle
     public float MinAltitude = 5f; // Minimum operational altitude
     public float MaxAltitude = 30f; // Maximum operational altitude
